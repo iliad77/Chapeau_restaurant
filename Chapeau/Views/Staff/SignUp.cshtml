@@ -1,0 +1,77 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>this is sign up page</h1>
+
+@model Chapeau.Models.User
+
+@{
+    ViewData["Title"] = "Create Staff";
+}
+
+<h1>Create Staff</h1>
+
+<form method="post" action="/Staff/SignUp">
+
+    <div>
+        <label>First Name</label><br />
+        <input type="text" name="first_name" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Last Name</label><br />
+        <input type="text" name="last_name" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Email</label><br />
+        <input type="email" name="email" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Phone Number</label><br />
+        <input type="text" name="phoneNum" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Username</label><br />
+        <input type="text" name="username" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Password</label><br />
+        <input type="password" name="password" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Role</label><br />
+        <select name="role">
+            <option value="Waiter">Waiter</option>
+            <option value="Manager">Manager</option>
+            <option value="Chef">Chef</option>
+            <option value="Bartender">Bartender</option>
+        </select>
+    </div>
+
+
+    <button type="submit">Create Staff</button>
+
+</form>
+
+<br />
+
+<a href="/Staff/Index">Back to Staff List</a>

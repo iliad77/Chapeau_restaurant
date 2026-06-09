@@ -1,0 +1,119 @@
+﻿@model Chapeau.Models.Order
+
+@{
+    bool isFinishedView = ViewBag.IsFinished ?? false;
+    bool isBarView = ViewBag.IsBar ?? false;
+
+    string targetController = isBarView ? "Bar" : "Kitchen";
+
+    string headerClass = isFinishedView ? "bg-success text-white" : (isBarView ? "bg-info text-white" : "bg-warning text-dark");
+}
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-header @headerClass d-flex justify-content-between align-items-center">
+        <div>
+            <strong>Table: @Model.Booth.booth_Id</strong> |
+            Order #: @Model.Id |
+            Time: @Model.OrderTime.ToString("HH:mm")
+        </div>
+        <div>
+            @if (!isFinishedView)
+            {
+                <span class="badge bg-dark">Waiting: @Model.GetWaitingTime()</span>
+            }
+            else
+            {
+                <span class="badge bg-light text-dark">Completed</span>
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        @if (isBarView)
+        {
+            <ul class="list-group">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@item.Quantity x @item.MenuItem.Name</strong>
+                            @if (!string.IsNullOrEmpty(item.Comment))
+                            {
+                                <br />
+                    
+                                <small class="text-danger">Comment: @item.Comment</small>
+                            }
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary me-3">@item.Status</span>
+
+                            @if (!isFinishedView && item.Status.ToString() != "Ready")
+                            {
+                                <form method="post" asp-action="ChangeItemStatus" asp-controller="@targetController">
+                                    <input type="hidden" name="orderItemId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-success">Next Status</button>
+                                </form>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            @foreach (var courseGroup in Model.OrderItems.GroupBy(i => i.MenuItem.Course))
+            {
+                <div class="d-flex justify-content-between align-items-center mt-2 mb-2 border-bottom pb-1">
+                    <h5 class="text-primary mb-0">@courseGroup.Key</h5>
+
+                    @if (!isFinishedView)
+                    {
+                        <form method="post" asp-action="ChangeCourseStatus" asp-controller="Kitchen">
+                            <input type="hidden" name="orderId" value="@Model.Id" />
+                            <input type="hidden" name="courseType" value="@courseGroup.Key" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Mark Course Ready</button>
+                        </form>
+                    }
+                </div>
+
+                <ul class="list-group mb-3">
+                    @foreach (var item in courseGroup)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@item.Quantity x @item.MenuItem.Name</strong>
+                                @if (!string.IsNullOrEmpty(item.Comment))
+                                {
+                                    <br />
+                    
+                                    <small class="text-danger">Comment: @item.Comment</small>
+                                }
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-3">@item.Status</span>
+
+                                @if (!isFinishedView && item.Status.ToString() != "Ready")
+                                {
+                                    <form method="post" asp-action="ChangeItemStatus" asp-controller="Kitchen">
+                                        <input type="hidden" name="orderItemId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-success">Next Status</button>
+                                    </form>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </div>
+
+    @if (!isFinishedView)
+    {
+        <div class="card-footer text-end">
+            <form method="post" asp-action="ChangeOrderStatus" asp-controller="@targetController">
+                <input type="hidden" name="orderId" value="@Model.Id" />
+                <button type="submit" class="btn btn-primary btn-sm">Mark Whole Order Ready</button>
+            </form>
+        </div>
+    }
+</div>

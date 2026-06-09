@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Chapeau.Models.Order>
+
+@{
+    bool isFinishedView = ViewBag.IsFinished ?? false;
+    ViewData["Title"] = isFinishedView ? "Bar - Finished Orders" : "Bar - Active Orders";
+}
+
+<div class="container mt-4">
+    <div class="mb-4 text-center">
+        <a asp-action="Active" asp-controller="Bar"
+           class="btn @(isFinishedView ? "btn-outline-info text-dark" : "btn-info text-white") me-2 shadow-sm">
+            Active Drink Orders
+        </a>
+        <a asp-action="Finished" asp-controller="Bar"
+           class="btn @(isFinishedView ? "btn-success" : "btn-outline-success") shadow-sm">
+            Finished Drink Orders Today
+        </a>
+    </div>
+
+    <h2 class="mb-4">@(isFinishedView ? "Finished Drink Orders (Bar)" : "Active Drink Orders (Bar)")</h2>
+
+    <div class="orders-container">
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info text-center">No drink orders found for this view.</div>
+        }
+        else
+        {
+            @foreach (var order in Model)
+            {
+                <partial name="_Orders" model="order" />
+            }
+        }
+    </div>
+</div>

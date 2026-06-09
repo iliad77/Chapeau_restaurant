@@ -1,0 +1,142 @@
+﻿@model Chapeau.ViewModels.OrderViewModel
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Taking Order for Order #@Model.OrderId</h2>
+        <a asp-controller="Booth" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Tables
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white fw-bold">
+                    <i class="bi bi-journal-eat"></i> Restaurant Menu
+                </div>
+                <div class="card-body" style="max-height: 70vh; overflow-y: auto;">
+
+                    @foreach (var courseGroup in Model.MenuItems.GroupBy(m => m.Course))
+                    {
+                        <h4 class="text-primary border-bottom pb-2 mt-3">@courseGroup.Key Course</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-center">Stock</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in courseGroup)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                @item.Name
+                                                @if (!string.IsNullOrEmpty(item.Description))
+                                                {
+                                                    <small class="text-muted d-block fw-normal">@item.Description</small>
+                                                }
+                                            </td>
+                                            <td class="text-end">$@item.Price.ToString("F2")</td>
+                                            <td class="text-center">
+                                                <span class="badge @(item.Stock > 5 ? "bg-success" : "bg-warning")">
+                                                    @item.Stock
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (item.Stock > 0)
+                                                {
+                                                    <form asp-controller="Order" asp-action="AddItem" method="post" class="d-inline">
+                                                        <input type="hidden" name="orderId" value="@Model.OrderId" />
+                                                        <input type="hidden" name="menuItemId" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="bi bi-plus-lg"></i> Add
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-sm btn-secondary" disabled>Out of stock</button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-cart-check"></i> Current Order Content</span>
+                    <span class="badge bg-white text-primary">@Model.CurrentOrderItems.Sum(i => i.Quantity) items</span>
+                </div>
+                <div class="card-body">
+
+                    @if (!Model.CurrentOrderItems.Any())
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-basket3 fs-1 d-block mb-2"></i>
+                            <p>The order is empty yet.<br>Select items from the menu on the left.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive" style="max-height: 50vh; overflow-y: auto;">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        decimal grandTotal = 0;
+                                    }
+                                    @foreach (var orderItem in Model.CurrentOrderItems)
+                                    {
+                                        var itemTotal = orderItem.Quantity * orderItem.MenuItem.Price;
+                                        grandTotal += itemTotal;
+
+                                        <tr>
+                                            <td class="fw-semibold">@orderItem.MenuItem.Name</td>
+                                            <td class="text-center">
+                                                <span class="badge bg-dark px-2 py-1">x@orderItem.Quantity</span>
+                                            </td>
+                                            <td class="text-end">$@orderItem.MenuItem.Price.ToString("F2")</td>
+                                            <td class="text-end fw-bold">$@itemTotal.ToString("F2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="border-top pt-3 mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">Grand Total:</h4>
+                                <h3 class="text-success mb-0 fw-bold">$@grandTotal.ToString("F2")</h3>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg w-100 fw-bold shadow">
+                                <i class="bi bi-cloud-arrow-up"></i> Save & Send Order
+                            </button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

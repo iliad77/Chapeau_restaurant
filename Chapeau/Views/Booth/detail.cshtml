@@ -1,0 +1,44 @@
+﻿
+@model Chapeau.Models.Booth
+
+@{
+    ViewData["Title"] = "Booth Details";
+}
+
+<h1>Booth Details</h1>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>Booth ID</th>
+        <td>@Model.booth_Id</td>
+    </tr>
+
+    <tr>
+        <th>Booth Number</th>
+        <td>@Model.booth_num</td>
+    </tr>
+
+    <tr>
+        <th>Seats</th>
+        <td>@Model.seats</td>
+    </tr>
+
+    <tr>
+        <th>Status</th>
+        <td>@Model.booth_status</td>
+    </tr>
+</table>
+
+<br />
+
+<a href="/Booth/Index">
+    <button type="button">Back to Booth List</button>
+</a>
+
+<a href="/Booth/Update/@Model.booth_Id">
+    <button type="button">Update Booth</button>
+</a>
+
+<a href="/Booth/Delete/@Model.booth_Id">
+    <button type="button">Delete Booth</button>
+</a>

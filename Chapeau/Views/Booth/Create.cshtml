@@ -1,0 +1,47 @@
+﻿@model Chapeau.Models.Booth
+
+@{
+    ViewData["Title"] = "Create Booth";
+}
+
+<h1>Create Booth</h1>
+
+@if (ViewBag.Message != null)
+{
+    <p style="color:red;">@ViewBag.Message</p>
+}
+
+<form method="post" action="/Booth/Create">
+
+    <div>
+        <label>Booth Number</label><br />
+        <input type="number" name="booth_num" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Seats</label><br />
+        <input type="number" name="seats" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Status</label><br />
+        <select name="booth_status">
+            <option value="0">Free</option>
+            <option value="1">Occupied</option>
+            <option value="2">Reserved</option>
+        </select>
+    </div>
+
+    <br />
+
+    <button type="submit">Create Booth</button>
+
+</form>
+
+<br />
+
+<a href="/Booth/Index">Back to Booth List</a>
